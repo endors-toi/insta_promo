@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:insta_promo/utils.dart';
 import 'package:nice_buttons/nice_buttons.dart';
 import 'package:insta_promo/usuarios_service.dart';
@@ -69,26 +70,32 @@ class _FormPageState extends State<FormPage> {
                         fontSize: 24,
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 10.0,
-                            color: Colors.black,
-                            offset: Offset(2.0, 2.0),
-                          ),
-                        ]),
+                        shadows: !_disabledBtn
+                            ? [
+                                Shadow(
+                                  blurRadius: 10.0,
+                                  color: Colors.black,
+                                  offset: Offset(2.0, 2.0),
+                                ),
+                              ]
+                            : null),
                   ),
                   startColor: _disabledBtn
                       ? Colors.grey
                       : Color.fromARGB(255, 250, 180, 28),
                   endColor: _disabledBtn
-                      ? const Color.fromARGB(255, 73, 73, 73)
+                      ? Color.fromARGB(255, 73, 73, 73)
                       : Color.fromARGB(255, 172, 97, 0),
-                  borderColor: Color.fromARGB(255, 66, 54, 0),
+                  borderColor: _disabledBtn
+                      ? Color.fromARGB(255, 0, 0, 0)
+                      : Color.fromARGB(255, 110, 72, 0),
                   borderRadius: 30,
                   disabled: _disabledBtn,
                   onTap: (finish) {
-                    toggleButton();
-                    _revisarUsuario(_ctlr.text).then((_) => toggleButton());
+                    _revisarUsuario(_ctlr.text.trim()).then((_) {
+                      toggleButton();
+                      EasyLoading.dismiss();
+                    });
                   },
                 ),
               ),
@@ -100,14 +107,17 @@ class _FormPageState extends State<FormPage> {
   }
 
   _revisarUsuario(String user) async {
+    toggleButton();
+    EasyLoading.show();
     String error = "";
 
     if (user.isEmpty) {
       error = "????? ta vacío";
     } else if (user.length > 30) {
       error = "usuario inválido 👨‍🦽\n(muy largo, máx 30)";
-    } else if (!RegExp(r'^[a-zA-Z0-9.]+$').hasMatch(user)) {
-      error = "usuario inválido 👨‍🦽\n(sólo letras, números, puntos)";
+    } else if (!RegExp(r'^[a-zA-Z0-9._]+$').hasMatch(user)) {
+      error =
+          "usuario inválido 👨‍🦽\n(sólo letras, números, puntos y guiones bajos)";
     }
 
     if (error.isNotEmpty) {

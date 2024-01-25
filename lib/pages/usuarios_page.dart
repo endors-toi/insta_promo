@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:insta_promo/usuarios_service.dart';
 import 'package:nice_buttons/nice_buttons.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -140,6 +141,8 @@ class _UsuariosPageState extends State<UsuariosPage> {
                 Navigator.of(context).pop();
               },
               child: Container(
+                alignment: Alignment.center,
+                width: 100,
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
@@ -157,10 +160,14 @@ class _UsuariosPageState extends State<UsuariosPage> {
             ),
             InkWell(
               onTap: () async {
-                await UsuariosService.clear();
                 Navigator.of(context).pop();
+                EasyLoading.show(status: 'cometiendo atrocidades...');
+                await UsuariosService.clear();
+                EasyLoading.showSuccess('', dismissOnTap: true);
               },
               child: Container(
+                alignment: Alignment.center,
+                width: 100,
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
